@@ -27,7 +27,6 @@ I edit the files in the chezmoi source directory, apply them back to my home fol
   - [Apply changes](#apply-changes)
   - [Check what changed](#check-what-changed)
 - [Git workflow](#git-workflow)
-- [Notes](#notes)
 
 ---
 
