@@ -244,3 +244,28 @@ git push
 ```
 
 Because I edit the files in the chezmoi source directory, I get a standard Git workflow in my IDE and in the terminal.
+
+---
+
+<p align="center">
+  <i>Maintained by <a href="https://github.com/dpacassi">David Pacassi Torrico</a>.</i><br />
+  <i>Personal dotfiles managed with <a href="https://chezmoi.io/">chezmoi</a>.</i><br />
+  <sup>There's no place like ~.</sup>
+</p>
+
+<!-- Easter egg -->
+<!--
+                /~~~~~~~~~~~~~~~~~~~~\
+               /   There's no place   \
+              /         like ~         \
+             /__________________________\
+             |                          |
+             |  []  []  []  []  [] []   |
+             |                          |
+             |      ~/.dotfiles         |
+             |         [____]           |
+             |         |   o|           |
+             |_________|____|___________|
+
+   dpacassi@localhost:~ $ chezmoi apply
+-->
