@@ -14,6 +14,7 @@ I edit the files in the chezmoi source directory, apply them back to my home fol
   - [Why chezmoi?](#why-chezmoi)
 - [My setup](#my-setup)
   - [Managed files](#managed-files)
+  - [Repo structure](#repo-structure)
 - [Installation](#installation)
   - [Install chezmoi](#install-chezmoi)
   - [Apply these dotfiles](#apply-these-dotfiles)
@@ -57,13 +58,33 @@ This also lets me use a normal Git working tree for my dotfiles while still test
 
 ### Managed files
 
-At the moment, this repository contains:
+This repo uses `.chezmoiroot`, so the actual chezmoi source state lives in `home/`.
 
-- `dot_gitignore_global`  
+At the moment, the managed files are:
+
+- `home/dot_gitignore_global`  
   My global Git ignore file, used via Git’s `core.excludesfile` setting.
 
-- `bin/`  
+- `home/bin/`  
   Personal helper scripts that are applied to `~/bin`.
+
+Files such as `README.md` and `LICENSE` live in the repository root for documentation and GitHub display, but are not applied to my home directory.
+
+### Repo structure
+
+A simplified repo structure looks like this:
+
+```text
+.
+├── .chezmoiroot
+├── LICENSE
+├── README.md
+└── home/
+    ├── bin/
+    └── dot_gitignore_global
+```
+
+`.chezmoiroot` tells chezmoi to use `home/` as the source root.
 
 ---
 
@@ -107,12 +128,14 @@ chezmoi update
 
 I edit the files directly in the chezmoi source directory, not in `~`.
 
-So in my IDE, I open this folder as the project root:
+So in my IDE, I open the chezmoi repository as the project root:
 
 ```sh
 chezmoi cd
 pwd
 ```
+
+Inside that repo, the actual managed files live under `home/` because of `.chezmoiroot`.
 
 That gives me a normal Git working tree inside the IDE, which means I can use:
 
@@ -165,6 +188,8 @@ chezmoi add ~/.gitignore_global
 chezmoi add ~/bin
 ```
 
+Because this repo uses `.chezmoiroot`, chezmoi will place the resulting source files under `home/`.
+
 ### Edit a managed file
 
 Edit a managed file through chezmoi:
@@ -173,7 +198,7 @@ Edit a managed file through chezmoi:
 chezmoi edit ~/.gitignore_global
 ```
 
-This opens the source file corresponding to `~/.gitignore_global`.
+This opens the source file corresponding to `~/.gitignore_global` inside `home/`.
 
 Edit and immediately apply afterwards:
 
