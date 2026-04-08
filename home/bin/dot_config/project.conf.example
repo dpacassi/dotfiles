@@ -1,0 +1,16 @@
+# Example project preset for custom shell files.
+
+# Absolute path to the repository root.
+project_root="/path/to/root"
+
+# Used by backup-and-clean-git-changes.sh
+backup_dir="/path/to/backup/dir"
+
+# Used by copy-selected.sh
+# Comma-separated list of files/directories to include.
+paths="file1,file2,folder1,folder2"
+
+# Used by copy-selected.sh
+# Optional comma-separated list of files/directories to exclude.
+ignore_paths="folder1/a/b,folder2/c/d"
+
