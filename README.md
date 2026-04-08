@@ -41,7 +41,7 @@ I edit the files in the chezmoi source directory, apply them back to my home fol
 
 This is my personal dotfiles repository.
 
-It contains the source files for selected configuration and utility files that live in my home directory, such as my global Git ignore file and local helper scripts.
+It contains the source files for selected configuration and utility files that live in my home directory, such as shell environment config, my global Git ignore file and local helper scripts.
 
 The files are managed with chezmoi instead of keeping a Git repository directly in `~`.
 
@@ -65,6 +65,9 @@ This also lets me use a normal Git working tree for my dotfiles while still test
 This repo uses `.chezmoiroot`, so the actual chezmoi source state lives in `home/`.
 
 At the moment, the managed files are:
+
+- `home/dot_zshenv`  
+  Minimal zsh environment configuration. Currently used to add `~/bin` to `PATH`.
 
 - `home/dot_gitignore_global`  
   My global Git ignore file, used via Git’s `core.excludesfile` setting.
@@ -92,7 +95,8 @@ A simplified repo structure looks like this:
     │   │   └── project.conf.example
     │   ├── executable_backup-and-clean-git-changes.sh
     │   └── executable_copy-selected.sh
-    └── dot_gitignore_global
+    ├── dot_gitignore_global
+    └── dot_zshenv
 ```
 
 `.chezmoiroot` tells chezmoi to use `home/` as the source root.
@@ -156,6 +160,8 @@ That gives me a normal Git working tree inside the IDE, which means I can use:
 - normal commits
 
 After editing files in my IDE, I apply them back to my actual home directory for testing.
+
+`home/dot_zshenv` is intentionally kept minimal and currently only adds `~/bin` to `PATH`, so my custom scripts are available from anywhere.
 
 ### Useful commands
 
@@ -256,6 +262,7 @@ This is the more native chezmoi workflow, where chezmoi maps between files in `~
 Add an existing file or directory from the home directory into chezmoi:
 
 ```sh
+chezmoi add ~/.zshenv
 chezmoi add ~/.gitignore_global
 chezmoi add ~/bin
 ```
@@ -267,15 +274,16 @@ Because this repo uses `.chezmoiroot`, chezmoi will place the resulting source f
 Edit a managed file through chezmoi:
 
 ```sh
+chezmoi edit ~/.zshenv
 chezmoi edit ~/.gitignore_global
 ```
 
-This opens the source file corresponding to `~/.gitignore_global` inside `home/`.
+This opens the source file corresponding to the file in `home/`.
 
 Edit and immediately apply afterwards:
 
 ```sh
-chezmoi edit --apply ~/.gitignore_global
+chezmoi edit --apply ~/.zshenv
 ```
 
 ### Apply changes
