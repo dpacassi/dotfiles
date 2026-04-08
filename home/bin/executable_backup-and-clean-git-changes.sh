@@ -2,24 +2,49 @@
 
 set -Eeuo pipefail
 
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_CONFIG_DIR="${REPO_HELPER_CONFIG_DIR:-$SCRIPT_DIR/.config}"
+
 usage() {
-  cat <<'EOF'
+  cat <<EOF
 Usage:
-  backup-and-clean-git-changes.sh --project-root=<project_root> --backup-dir=<backup_dir>
+  $SCRIPT_NAME --project=<name> [--backup-dir=<path>] [--project-root=<path>] [--config-dir=<path>]
+  $SCRIPT_NAME --project-root=<project_root> --backup-dir=<backup_dir>
+
+Config:
+  By default, project presets are loaded from:
+    $DEFAULT_CONFIG_DIR/<project>.conf
 
 Options:
-  --project-root=<path>   Path to the Git project root
-  --backup-dir=<path>     Path to the backup directory
-  -h, --help              Show this help
+  --project=<name>         Load preset values from <config-dir>/<name>.conf
+  --project-root=<path>    Path to the Git project root
+  --backup-dir=<path>      Path to the backup directory
+  --config-dir=<path>      Override config directory
+  -h, --help               Show this help
+
+Precedence:
+  explicit CLI args > project config file > error
 EOF
   exit 1
 }
 
+PROJECT_NAME=""
 PROJECT_ROOT=""
 BACKUP_DIR=""
+CONFIG_DIR="$DEFAULT_CONFIG_DIR"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --project=*)
+      PROJECT_NAME="${1#*=}"
+      shift
+      ;;
+    --project)
+      [[ $# -ge 2 ]] || usage
+      PROJECT_NAME="$2"
+      shift 2
+      ;;
     --project-root=*)
       PROJECT_ROOT="${1#*=}"
       shift
@@ -38,6 +63,15 @@ while [[ $# -gt 0 ]]; do
       BACKUP_DIR="$2"
       shift 2
       ;;
+    --config-dir=*)
+      CONFIG_DIR="${1#*=}"
+      shift
+      ;;
+    --config-dir)
+      [[ $# -ge 2 ]] || usage
+      CONFIG_DIR="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       ;;
@@ -47,6 +81,32 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+CONFIG_PROJECT_ROOT=""
+CONFIG_BACKUP_DIR=""
+
+load_project_config() {
+  local project="$1"
+  local config_file="$CONFIG_DIR/${project}.conf"
+
+  if [[ ! -f "$config_file" ]]; then
+    echo "Error: project config not found: $config_file" >&2
+    exit 1
+  fi
+
+  # shellcheck disable=SC1090
+  source "$config_file"
+
+  CONFIG_PROJECT_ROOT="${project_root:-}"
+  CONFIG_BACKUP_DIR="${backup_dir:-}"
+}
+
+if [[ -n "$PROJECT_NAME" ]]; then
+  load_project_config "$PROJECT_NAME"
+fi
+
+PROJECT_ROOT="${PROJECT_ROOT:-$CONFIG_PROJECT_ROOT}"
+BACKUP_DIR="${BACKUP_DIR:-$CONFIG_BACKUP_DIR}"
 
 [[ -n "$PROJECT_ROOT" && -n "$BACKUP_DIR" ]] || usage
 
