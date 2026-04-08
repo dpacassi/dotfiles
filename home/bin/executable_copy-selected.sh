@@ -3,21 +3,66 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <project_root> <comma-separated-paths> [<comma-separated-ignore-paths>]"
-  echo
-  echo "Examples:"
-  echo "  $0 /home/me/my-project \"composer.json,web/modules/custom,config/sync/core.extension.yml\""
-  echo "  $0 /home/me/my-project \"web,config\" \".git,node_modules,web/sites/default/files\""
+  cat <<'EOF'
+Usage:
+  copy-selected.sh --project-root=<project_root> --paths=<comma-separated-paths> [--ignore-paths=<comma-separated-ignore-paths>]
+
+Examples:
+  copy-selected.sh --project-root=/home/me/my-project --paths="composer.json,web/modules/custom,config/sync/core.extension.yml"
+
+Options:
+  --project-root=<path>    Path to the project root
+  --paths=<paths>          Comma-separated list of paths to include
+  --ignore-paths=<paths>   Optional comma-separated list of paths to exclude
+  -h, --help               Show this help
+EOF
   exit 1
 }
 
-if [[ $# -lt 2 || $# -gt 3 ]]; then
-  usage
-fi
+project_root=""
+input_list=""
+ignore_list=""
 
-project_root="$1"
-input_list="$2"
-ignore_list="${3:-}"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project-root=*)
+      project_root="${1#*=}"
+      shift
+      ;;
+    --project-root)
+      [[ $# -ge 2 ]] || usage
+      project_root="$2"
+      shift 2
+      ;;
+    --paths=*)
+      input_list="${1#*=}"
+      shift
+      ;;
+    --paths)
+      [[ $# -ge 2 ]] || usage
+      input_list="$2"
+      shift 2
+      ;;
+    --ignore-paths=*)
+      ignore_list="${1#*=}"
+      shift
+      ;;
+    --ignore-paths)
+      [[ $# -ge 2 ]] || usage
+      ignore_list="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Error: unknown argument: $1" >&2
+      usage
+      ;;
+  esac
+done
+
+[[ -n "$project_root" && -n "$input_list" ]] || usage
 
 if [[ ! -d "$project_root" ]]; then
   echo "Error: project root does not exist or is not a directory: $project_root" >&2

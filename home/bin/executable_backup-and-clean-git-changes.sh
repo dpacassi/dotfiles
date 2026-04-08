@@ -3,14 +3,52 @@
 set -Eeuo pipefail
 
 usage() {
-  echo "Usage: $0 <project_root> <backup_dir>"
+  cat <<'EOF'
+Usage:
+  backup-and-clean-git-changes.sh --project-root=<project_root> --backup-dir=<backup_dir>
+
+Options:
+  --project-root=<path>   Path to the Git project root
+  --backup-dir=<path>     Path to the backup directory
+  -h, --help              Show this help
+EOF
   exit 1
 }
 
-[[ $# -eq 2 ]] || usage
+PROJECT_ROOT=""
+BACKUP_DIR=""
 
-PROJECT_ROOT="$1"
-BACKUP_DIR="$2"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project-root=*)
+      PROJECT_ROOT="${1#*=}"
+      shift
+      ;;
+    --project-root)
+      [[ $# -ge 2 ]] || usage
+      PROJECT_ROOT="$2"
+      shift 2
+      ;;
+    --backup-dir=*)
+      BACKUP_DIR="${1#*=}"
+      shift
+      ;;
+    --backup-dir)
+      [[ $# -ge 2 ]] || usage
+      BACKUP_DIR="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Error: unknown argument: $1" >&2
+      usage
+      ;;
+  esac
+done
+
+[[ -n "$PROJECT_ROOT" && -n "$BACKUP_DIR" ]] || usage
 
 if [[ ! -d "$PROJECT_ROOT" ]]; then
   echo "Error: project root does not exist: $PROJECT_ROOT" >&2
