@@ -22,6 +22,10 @@ I edit the files in the chezmoi source directory, apply them back to my home fol
 - [Workflow](#workflow)
   - [My IDE workflow](#my-ide-workflow)
   - [Useful commands](#useful-commands)
+- [Helper scripts](#helper-scripts)
+  - [`copy-selected.sh`](#copy-selectedsh)
+  - [`backup-and-clean-git-changes.sh`](#backup-and-clean-git-changessh)
+  - [Project presets](#project-presets)
 - [Managing files the chezmoi way](#managing-files-the-chezmoi-way)
   - [Add a file](#add-a-file)
   - [Edit a managed file](#edit-a-managed-file)
@@ -68,6 +72,9 @@ At the moment, the managed files are:
 - `home/bin/`  
   Personal helper scripts that are applied to `~/bin`.
 
+- `home/bin/dot_config/`  
+  Example project presets for the helper scripts.
+
 Files such as `README.md` and `LICENSE` live in the repository root for documentation and GitHub display, but are not applied to my home directory.
 
 ### Repo structure
@@ -81,6 +88,10 @@ A simplified repo structure looks like this:
 ├── README.md
 └── home/
     ├── bin/
+    │   ├── dot_config/
+    │   │   └── project.conf.example
+    │   ├── executable_backup-and-clean-git-changes.sh
+    │   └── executable_copy-selected.sh
     └── dot_gitignore_global
 ```
 
@@ -172,6 +183,67 @@ Open the source directory:
 ```sh
 chezmoi cd
 ```
+
+---
+
+## Helper scripts
+
+### `copy-selected.sh`
+
+Source file:
+
+```text
+home/bin/executable_copy-selected.sh
+```
+
+Copies selected files and folders from a project into a ZIP archive in `~/Downloads`.
+
+It supports:
+
+- explicit CLI arguments
+- project presets via config files
+- optional ignore paths
+- overriding the config directory via `--config-dir` or `REPO_HELPER_CONFIG_DIR`
+
+### `backup-and-clean-git-changes.sh`
+
+Source file:
+
+```text
+home/bin/executable_backup-and-clean-git-changes.sh
+```
+
+Backs up changed and untracked files from a Git repository, then resets tracked changes and removes untracked files.
+
+It supports:
+
+- explicit CLI arguments
+- project presets via config files
+- overriding the config directory via `--config-dir` or `REPO_HELPER_CONFIG_DIR`
+
+### Project presets
+
+Example preset files live in:
+
+```text
+home/bin/dot_config/
+```
+
+Current example file:
+
+```text
+home/bin/dot_config/project.conf.example
+```
+
+The example preset shows these variables:
+
+- `project_root`
+- `backup_dir`
+- `paths`
+- `ignore_paths`
+
+Note that the helper scripts currently default to reading presets from a runtime config directory under the script directory (`.config`) unless overridden.
+The `dot_config/` directory in this repo is used to store the example preset file in version control.
 
 ---
 
